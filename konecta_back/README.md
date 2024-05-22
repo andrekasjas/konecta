@@ -77,3 +77,6 @@ Se implementó la autenticación con Passport.js y JWT para manejar la sesión y
 
 Se protegieron las rutas teniendo en cuenta los roles que tenga el usuario en su token, y se validaron los tokens que cambiaran su clave.
 
+## Pruebas End-to-End (E2E)
+
+Se han incluido pruebas E2E en este proyecto ya que esto nos ayuda a garantizar su correcto funcionamiento.
