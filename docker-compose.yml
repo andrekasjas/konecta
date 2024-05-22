@@ -1,5 +1,5 @@
 services:
- backend:
+  backend:
     build: ./konecta_back
     ports:
       - "5000:5000"
@@ -14,3 +14,16 @@ services:
       - DB_NAME=konecta
       - DB_PORT=5432
       - JWT_SECRET=konecta
+      
+  frontend:
+    build: ./konecta_front
+    ports:
+      - "80:80"
+    volumes:
+      - ./konecta_front:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_ROUTE=http://localhost:5000/api/v1
+    depends_on:
+      - backend
