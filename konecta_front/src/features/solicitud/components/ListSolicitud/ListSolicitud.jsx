@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Modal, Paginator } from '../../../ui/components';
+import { Modal, Paginator, Skeleton } from '../../../ui/components';
 import { getAllSolicitud } from '../../services/getAllSolicitud';
 import { Button, Input } from '../../../form/components';
 import { DeleteSolicitud } from '../DeleteSolicitud/DeleteSolicitud';
@@ -21,6 +21,7 @@ export const ListSolicitud = ({ isSelect = false, onSelect }) => {
   };
 
   const serviceGetAll = async () => {
+    setIsLoading(true);
     const data = {
       limit: limit,
       offset: offset,
@@ -32,12 +33,14 @@ export const ListSolicitud = ({ isSelect = false, onSelect }) => {
         setTotalItems(totalItems);
         setItems(items);
       })
+      .finally(() => setIsLoading(false));
   }
 
   const handlePageChange = (newOffset) => {
     setOffset(newOffset);
   };
 
+  const [isLoading, setIsLoading] = useState(false);
   const [solicitudDelete, setSolicitudDelete] = useState();
   const [solicitudUpdate, setSolicitudUpdate] = useState();
   const [selected, setSelected] = useState();
@@ -61,50 +64,57 @@ export const ListSolicitud = ({ isSelect = false, onSelect }) => {
 
   return (
     <div className="container mx-auto mt-8">
-      <div className="space-y-4 flex flex-col">
-        <div className="flex gap-4">
-          <Input type='text' value={search} onChange={(e) => setSearch(e.target.value)} placeholder='Buscar por nombre' className={'flex-1'}
-            onEnterPress={serviceGetAll} />
-          <Button fullWidth={false} onClick={() => serviceGetAll()} color='primary'>Buscar</Button>
-        </div>
-        <div className="p-4 border">
-          <div className="flex gap-4 font-bold items-center">
-            <div className='flex-1'>Codigo</div>
-            <div className='flex-1'>Descripción</div>
-            <div className='flex-1'>Resumen</div>
-            {validateAdmin() && <div className='flex-1 text-center'>Acciones</div>}
+      {isLoading ? <Skeleton /> :
+        <div className="space-y-4 flex flex-col">
+          <div className="flex gap-4">
+            <Input type='text' value={search} onChange={(e) => setSearch(e.target.value)} placeholder='Buscar por nombre' className={'flex-1'}
+              onEnterPress={serviceGetAll} />
+            <Button fullWidth={false} onClick={() => serviceGetAll()} color='primary'>Buscar</Button>
           </div>
-          {items.map((item) => (
-            <div key={item.id} className={`p-4 ${isSelect ? 'cursor-pointer' : ''} ${selected?.id === item.id ? 'bg-gray-200' : ''}`}
-              onClick={() => isSelect && handleSelect(item)}>
-              <div className="flex gap-4">
-                <div className='flex-1'>{item.codigo}</div>
-                <div className='flex-1'>{item.descripcion}</div>
-                <div className='flex-1'>{item.resumen}</div>
-                {validateAdmin() && <div className="flex flex-1 gap-4 justify-center h-11">
-                  <Button fullWidth={false} onClick={() => setSolicitudUpdate(item)} color='warning' >
-                    <FontAwesomeIcon icon={faEdit} />
-                  </Button>
-                  <Button fullWidth={false} onClick={() => {setSolicitudDelete(item.id)}} color='danger' >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </Button>
-                </div>}
-              </div>
+          <div className="p-4 border">
+            <div className="flex gap-4 font-bold items-center">
+              <div className='flex-1'>Codigo</div>
+              <div className='flex-1'>Descripción</div>
+              <div className='flex-1'>Resumen</div>
+              {validateAdmin() && <div className='flex-1 text-center'>Acciones</div>}
             </div>
-          ))}
-        </div>
-      </div>
-      <Paginator
-        limit={limit}
-        offset={offset}
-        totalItems={totalItems}
-        onPageChange={handlePageChange}
-      />
+            {items.length > 0 ? items.map((item) => (
+              <div key={item.id} className={`p-4 ${isSelect ? 'cursor-pointer' : ''} ${selected?.id === item.id ? 'bg-gray-200' : ''}`}
+                onClick={() => isSelect && handleSelect(item)}>
+                <div className="flex gap-4">
+                  <div className='flex-1'>{item.codigo}</div>
+                  <div className='flex-1'>{item.descripcion}</div>
+                  <div className='flex-1'>{item.resumen}</div>
+                  {validateAdmin() && <div className="flex flex-1 gap-4 justify-center h-11">
+                    <Button fullWidth={false} onClick={() => setSolicitudUpdate(item)} color='warning' >
+                      <FontAwesomeIcon icon={faEdit} />
+                    </Button>
+                    <Button fullWidth={false} onClick={() => { setSolicitudDelete(item.id) }} color='danger' >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </Button>
+                  </div>}
+                </div>
+              </div>
+            )) :
+              <div className="text-center p-4">
+                No se encontraron solicitudes
+              </div>
+            }
+          </div>
+        </div>}
+      {totalItems > 0 &&
+        <Paginator
+          limit={limit}
+          offset={offset}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+        />
+      }
       {solicitudDelete && (
-        <DeleteSolicitud 
-        id={solicitudDelete} 
-        onSuccess={() => { serviceGetAll(); setSolicitudDelete() }}
-        onCancel={() => setSolicitudDelete()} />
+        <DeleteSolicitud
+          id={solicitudDelete}
+          onSuccess={() => { serviceGetAll(); setSolicitudDelete() }}
+          onCancel={() => setSolicitudDelete()} />
       )}
       {solicitudUpdate && (
         <Modal isOpen onClose={() => { setSolicitudUpdate() }}>

@@ -16,7 +16,6 @@ export const useForm =({
   }
 
   const changeValueForm = (name, value) => {
-    console.log(name, value);
     setForm({
       ...form,
       [name]: value

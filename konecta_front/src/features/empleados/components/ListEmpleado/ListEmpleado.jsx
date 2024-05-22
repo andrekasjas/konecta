@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Paginator } from '../../../ui/components';
+import { Paginator, Skeleton } from '../../../ui/components';
 import { getAllEmpleado } from '../../services/getAllEmpleado';
 import { formatDate } from '../../../../utils';
 import { Button, Input } from '../../../form/components';
@@ -16,6 +16,7 @@ export const ListEmpleado = ({ isSelect = false, onSelect, defaultSelected }) =>
     onSelect(item);
   };
 
+  const [isLoading, setIsLoading] = useState(false);
   const [selected, setSelected] = useState();
   const [items, setItems] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -28,6 +29,7 @@ export const ListEmpleado = ({ isSelect = false, onSelect, defaultSelected }) =>
   }, [offset, limit]);
 
   const serviceGetAll = async () => {
+    setIsLoading(true);
     const data = {
       limit: limit,
       offset: offset,
@@ -39,6 +41,7 @@ export const ListEmpleado = ({ isSelect = false, onSelect, defaultSelected }) =>
         setTotalItems(totalItems);
         setItems(items);
       })
+      .finally(() => setIsLoading(false));
   }
 
   const handlePageChange = (newOffset) => {
@@ -53,37 +56,44 @@ export const ListEmpleado = ({ isSelect = false, onSelect, defaultSelected }) =>
 
   return (
     <div className="container mx-auto mt-8">
-      <div className="space-y-4 flex flex-col">
-        <div className="flex gap-4">
-          <Input type='text' value={search} onChange={(e) => setSearch(e.target.value)} placeholder='Buscar por nombre' className={'flex-1'}
-            onEnterPress={serviceGetAll} />
-          <Button fullWidth={false} onClick={() => serviceGetAll()} color='primary'>Buscar</Button>
-        </div>
-        <div className="p-4 border">
-          <div className="flex gap-4 font-bold">
-            <div className='flex-1'>Nombre</div>
-            <div className='flex-1'>Salario</div>
-            <div className='flex-1'>Fecha Ingreso</div>
+      {isLoading ? <Skeleton /> :
+        <div className="space-y-4 flex flex-col">
+          <div className="flex gap-4">
+            <Input type='text' value={search} onChange={(e) => setSearch(e.target.value)} placeholder='Buscar por nombre' className={'flex-1'}
+              onEnterPress={serviceGetAll} />
+            <Button fullWidth={false} onClick={() => serviceGetAll()} color='primary'>Buscar</Button>
           </div>
-          {items.map((item) => (
-            <div key={item.id} className={`p-4 ${isSelect ? 'cursor-pointer' : ''} ${(selected?.id === item.id) || (defaultSelected === item.id) ? 'bg-gray-200' : ''}`}
-              onClick={() => isSelect && handleSelect(item)}>
-              <div className="flex gap-4">
-                <div className='flex-1'>{item.nombre}</div>
-                <div className='flex-1'>{item.salario}</div>
-                <div className='flex-1'>{formatDate(item.fechaIngreso)}</div>
-              </div>
+          <div className="p-4 border">
+            <div className="flex gap-4 font-bold">
+              <div className='flex-1'>Nombre</div>
+              <div className='flex-1'>Salario</div>
+              <div className='flex-1'>Fecha Ingreso</div>
             </div>
-          ))}
+            {items.length > 0 ? items.map((item) => (
+              <div key={item.id} className={`p-4 ${isSelect ? 'cursor-pointer' : ''} ${(selected?.id === item.id) || (defaultSelected === item.id) ? 'bg-gray-200' : ''}`}
+                onClick={() => isSelect && handleSelect(item)}>
+                <div className="flex gap-4">
+                  <div className='flex-1'>{item.nombre}</div>
+                  <div className='flex-1'>{item.salario}</div>
+                  <div className='flex-1'>{formatDate(item.fechaIngreso)}</div>
+                </div>
+              </div>
+            )) :
+              <div className="p-4 border">
+                No hay empleados
+              </div>
+            }
+          </div>
         </div>
-
-      </div>
-      <Paginator
-        limit={limit}
-        offset={offset}
-        totalItems={totalItems}
-        onPageChange={handlePageChange}
-      />
+      }
+      {totalItems > 0 &&
+        <Paginator
+          limit={limit}
+          offset={offset}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+        />
+      }
     </div>
   );
 };

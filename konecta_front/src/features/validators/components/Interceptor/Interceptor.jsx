@@ -13,7 +13,7 @@ export function Interceptor({ children }) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [isRequest, setIsRequest] = useState(false);
-  const { show, open, close } = usePopup();
+  const { openModal, closeModal, isOpen } = usePopup();
 
   const handleResponseError = async (error) => {
     if (!error.response) {
@@ -22,7 +22,7 @@ export function Interceptor({ children }) {
     }
     const { message } = error.response.data;
     if (error.response.status === 401 && authInformation.isAuth) {
-      open();
+      openModal();
     }
     setMessage(message || error.message);
     throw message || error.message;
@@ -57,8 +57,8 @@ export function Interceptor({ children }) {
   }, [authInformation.token]);
 
 
-  const closeModal = async () => {
-    close();
+  const closeModalInt = async () => {
+    closeModal();
     handlerLogout();
   };
 
@@ -79,9 +79,9 @@ export function Interceptor({ children }) {
         </SelfDestructComponent>
       }
       {children}
-      <Modal isOpen={show} onClose={closeModal}>
+      <Modal isOpen={isOpen} onClose={closeModalInt}>
         Su sesión ha expirado
-        <Button color='primary' variant='shadow' onClick={closeModal}>Aceptar</Button>
+        <Button color='primary' variant='shadow' onClick={closeModalInt}>Aceptar</Button>
       </Modal>
     </>
   );

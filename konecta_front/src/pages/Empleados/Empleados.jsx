@@ -13,17 +13,18 @@ const Empleados = () => {
     <section>
       <div className="flex justify-between">
         <h1 className="text-2xl font-bold w-full text-center">Empleados</h1>
-        {validateAdmin() &&
-          <Link to="/empleados/form">
-            <Button fullWidth={false} >
-              <div className="flex items-center">
-                Crear <FontAwesomeIcon icon={faPlus} className="ml-2" />
-              </div>
-            </Button>
-          </Link>
-        }
+        <p className="text-sm text-gray-500">
+          El agregar no se restringe de vista por el rol, pero si se restringe por el backend
+        </p>
+        <Link to="/empleados/form">
+          <Button fullWidth={false} >
+            <div className="flex items-center">
+              Crear <FontAwesomeIcon icon={faPlus} className="ml-2" />
+            </div>
+          </Button>
+        </Link>
       </div>
-      <ListEmpleado  />
+      <ListEmpleado />
     </section>
   )
 }

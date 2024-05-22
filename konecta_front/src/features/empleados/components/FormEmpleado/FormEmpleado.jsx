@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { lazy } from 'react'
 import { useForm, usePopup } from '../../../../hook';
 import { Button, Confirm, Input } from '../../../form/components';
 import { ListUser } from '../../../usuario/components';
@@ -15,7 +15,7 @@ export const FormEmpleado = ({onSucces}) => {
 
   const serviceSaveEmpleado = async () => {
     await saveEmpleado(form)
-      .then(response => {
+      .then(() => {
         onSucces();
       })
   }
@@ -65,6 +65,12 @@ export const FormEmpleado = ({onSucces}) => {
           onChange={handleChange}
           placeholder="Salario"
         />
+        <div className='flex flex-col'>
+          <p>Usuario<span className='text-red-500'>*</span></p>
+          <p className='text-xs text-gray-500'>{
+            form.idUsuario == 0 ? 'Seleccione un usuario' : 'Usuario seleccionado'
+          }</p>
+        </div>
         <ListUser isSelect onSelect={(item) => changeValueForm('idUsuario',item.id.toString()) } />
         <Button type="submit" className='mt-4'>Enviar</Button>
       </form>
