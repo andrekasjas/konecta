@@ -1,7 +1,7 @@
 const request = require('supertest');
 const createApp = require('../app');
 
-describe('tests for /users path', () => {
+describe('tests for /usuarios path', () => {
 
   let app = null;
   let server = null;
@@ -13,18 +13,18 @@ describe('tests for /users path', () => {
     api = request(app);
   });
 
-  describe('GET /users', () => {
-    // tests for /users
+  describe('GET /usuarios', () => {
+    // tests for /usuarios
   });
 
-  describe('POST /users', () => {
+  describe('POST /usuarios', () => {
 
     test('should return a 400 Bad request with password invalid', async () => {
       const inputData = {
         email: "andresmogollob@mail.com",
         password: "-----"
       };
-      const { statusCode, body } = await api.post('/api/v1/users').send(inputData);
+      const { statusCode, body } = await api.post('/api/v1/usuarios').send(inputData);
       expect(statusCode).toBe(400);
       expect(body.message).toMatch(/password/);
     });
@@ -34,15 +34,15 @@ describe('tests for /users path', () => {
         email: "----",
         password: "najshash1212as"
       };
-      const { statusCode, body } = await api.post('/api/v1/users').send(inputData);
+      const { statusCode, body } = await api.post('/api/v1/usuarios').send(inputData);
       expect(statusCode).toBe(400);
       expect(body.message).toMatch(/email/);
     });
 
   });
 
-  describe('PUT /users', () => {
-    // tests for /users
+  describe('PUT /usuarios', () => {
+    // tests for /usuarios
   });
 
 
