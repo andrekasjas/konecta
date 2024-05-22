@@ -1,13 +1,15 @@
 const express = require('express');
-
+const passport = require('passport');
 const validatorHandler = require('../middlewares/validator.handler');
 const { createSolicitudSchema, getSolicitudSchema, queryEmpleadoSchema } = require('../schemas/solicitud.schema');
 const SolicitudService = require('../services/solicitud.service');
+const checkAdminRol = require('../middlewares/auth.handler');
 
 const router = express.Router();
 const solicitudService = new SolicitudService();
 
 router.get('/',
+  passport.authenticate('jwt', { session: false }),
   validatorHandler(queryEmpleadoSchema, 'query'),
   async (req, res, next) => {
     try {
@@ -20,6 +22,7 @@ router.get('/',
   });
 
 router.get('/:id',
+  passport.authenticate('jwt', { session: false }),
   validatorHandler(getSolicitudSchema, 'params'),
   async (req, res, next) => {
     try {
@@ -32,6 +35,8 @@ router.get('/:id',
   });
 
 router.post('/',
+  passport.authenticate('jwt', { session: false }),
+  checkAdminRol,
   validatorHandler(createSolicitudSchema, 'body'),
   async (req, res, next) => {
     try {
@@ -44,6 +49,8 @@ router.post('/',
   });
 
 router.put('/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkAdminRol,
   validatorHandler(getSolicitudSchema, 'params'),
   validatorHandler(createSolicitudSchema, 'body'),
   async (req, res, next) => {
@@ -58,11 +65,13 @@ router.put('/:id',
   });
 
 router.delete('/:id',
+  passport.authenticate('jwt', { session: false }),
+  checkAdminRol,
   validatorHandler(getSolicitudSchema, 'params'),
   async (req, res, next) => {
     try {
       const { id } = req.params;
-      const request = await solicitudService.delete(id);
+      await solicitudService.delete(id);
       res.status(204).end();
     } catch (error) {
       next(error);

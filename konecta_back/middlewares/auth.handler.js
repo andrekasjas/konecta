@@ -1,6 +1,6 @@
 const boom = require('@hapi/boom');
 
-function checkAdminRole(req, res, next) {
+function checkAdminRol(req, res, next) {
   if (req.user.rol === 'ADMINISTRADOR') {
     next();
   } else {
@@ -8,4 +8,4 @@ function checkAdminRole(req, res, next) {
   }
 }
 
-module.exports = checkAdminRole;
+module.exports = checkAdminRol;
